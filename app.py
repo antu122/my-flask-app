@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 
-app = Flask(_name_)
+app = Flask(__name__)
 
 COLLEGES_DATA = [
     # ঢাকা বোর্ড
@@ -14,69 +14,42 @@ COLLEGES_DATA = [
     {"name": "রাজউক উত্তরা মডেল কলেজ", "board": "dhaka", "group": "commerce", "min_gpa": 4.75, "location": "ঢাকা"},
     {"name": "মোহাম্মদপুর সরকারি কলেজ", "board": "dhaka", "group": "science", "min_gpa": 4.50, "location": "ঢাকা"},
     {"name": "মোহাম্মদপুর সরকারি কলেজ", "board": "dhaka", "group": "arts", "min_gpa": 3.80, "location": "ঢাকা"},
-    {"name": "লালমাটিয়া সরকারি মহিলা কলেজ", "board": "dhaka", "group": "science", "min_gpa": 4.25, "location": "ঢাকা"},
+    {"name": "লালমাটিয়া সরকারি মহিলা কলেজ", "board": "dhaka", "group": "science", "min_gpa": 4.25, "location": "ঢাকা"},
     {"name": "মিরপুর সরকারি কলেজ", "board": "dhaka", "group": "commerce", "min_gpa": 3.50, "location": "ঢাকা"},
-
+    
     # রাজশাহী বোর্ড
     {"name": "রাজশাহী কলেজ (Rajshahi College)", "board": "rajshahi", "group": "science", "min_gpa": 5.00, "location": "রাজশাহী"},
     {"name": "রাজশাহী কলেজ (Rajshahi College)", "board": "rajshahi", "group": "commerce", "min_gpa": 4.50, "location": "রাজশাহী"},
     {"name": "রাজশাহী কলেজ (Rajshahi College)", "board": "rajshahi", "group": "arts", "min_gpa": 4.00, "location": "রাজশাহী"},
-    {"name": "নিউ গভ. ডিগ্রি কলেজ", "board": "rajshahi", "group": "science", "min_gpa": 4.80, "location": "রাজশাহী"},
-
-    # চট্টগ্রাম বোর্ড
-    {"name": "চট্টগ্রাম কলেজ (Chittagong College)", "board": "chittagong", "group": "science", "min_gpa": 5.00, "location": "চট্টগ্রাম"},
-    {"name": "সরকারি হাজী মহসিন কলেজ", "board": "chittagong", "group": "science", "min_gpa": 4.75, "location": "চট্টগ্রাম"},
-
-    # অন্যান্য বোর্ড
-    {"name": "কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ", "board": "comilla", "group": "science", "min_gpa": 4.85, "location": "কুমিল্লা"},
-    {"name": "সিলেট সরকারি কলেজ", "board": "sylhet", "group": "science", "min_gpa": 4.50, "location": "সিলেট"},
-    {"name": "খুলনা সরকারি মজিদ মেমোরিয়াল সিটি কলেজ", "board": "khulna", "group": "science", "min_gpa": 4.75, "location": "খুলনা"},
-    {"name": "সরকারি ব্রজমোহন (BM) কলেজ", "board": "barisal", "group": "science", "min_gpa": 4.60, "location": "বরিশাল"},
-    {"name": "দিনাজপুর সরকারি কলেজ", "board": "dinajpur", "group": "science", "min_gpa": 4.50, "location": "দিনাজপুর"},
-    {"name": "ময়মনসিংহ আনন্দ মোহন কলেজ", "board": "mymensingh", "group": "science", "min_gpa": 4.90, "location": "ময়মনসিংহ"}
+    {"name": "নিউ গভ. ডিগ্রি কলেজ", "board": "rajshahi", "group": "science", "min_gpa": 4.80, "location": "রাজশাহী"}
 ]
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    high_chance = []
-    medium_chance = []
-    low_chance = []
-    submitted = False
-    student_info = {}
+    matched_colleges = []
+    user_gpa = None
+    selected_board = None
+    selected_group = None
 
     if request.method == 'POST':
-        submitted = True
-        board = request.form.get('board')
-        group = request.form.get('group')
         try:
-            gpa = float(request.form.get('gpa', 0))
+            user_gpa = float(request.form.get('gpa', 0))
+            selected_board = request.form.get('board')
+            selected_group = request.form.get('group')
+
+            for college in COLLEGES_DATA:
+                if (college['board'] == selected_board and 
+                    college['group'] == selected_group and 
+                    user_gpa >= college['min_gpa']):
+                    matched_colleges.append(college)
         except ValueError:
-            gpa = 0.0
+            pass
 
-        student_info = {
-            'board': board.upper(),
-            'group': group.capitalize(),
-            'gpa': gpa
-        }
+    return render_template('index.html', 
+                           colleges=matched_colleges, 
+                           gpa=user_gpa, 
+                           board=selected_board, 
+                           group=selected_group)
 
-        for college in COLLEGES_DATA:
-            if college['group'] == group and (college['board'] == board or board == 'all'):
-                min_gpa = college['min_gpa']
-                if gpa >= min_gpa + 0.1:
-                    high_chance.append(college)
-                elif gpa >= min_gpa:
-                    medium_chance.append(college)
-                elif gpa >= min_gpa - 0.5:
-                    low_chance.append(college)
-
-    return render_template(
-        'index.html',
-        submitted=submitted,
-        student_info=student_info,
-        high_chance=high_chance,
-        medium_chance=medium_chance,
-        low_chance=low_chance
-    )
-
-if _ _name_ _ == '_ _main_ _':
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
