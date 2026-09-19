@@ -78,5 +78,5 @@ def home():
         low_chance=low_chance
     )
 
-if _name_ == '_main_':
+if _ _name_ _ == '_ _main_ _':
     app.run(debug=True)
