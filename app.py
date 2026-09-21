@@ -3,89 +3,117 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 
 # ==============================================================================
-# বাংলাদেশের ৬৪টি জেলার মানসম্মত কলেজ ডাটাবেজ (মাদ্রাসা ও কারিগরি বাদে)
+# বাংলাদেশের ৬৪ জেলার বিস্তৃত ও মানসম্মত কলেজের ডাটাবেজ (সাধারণ ও উচ্চমাধ্যমিক)
 # ==============================================================================
 COLLEGES_DATA = [
-    # ------------------ ১. ঢাকা জেলা ------------------
-    {"name": "ঢাকা কলেজ (Dhaka College)", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "নিউ মার্কেট, ঢাকা"},
-    {"name": "ঢাকা কলেজ (Dhaka College)", "district": "dhaka", "group": "commerce", "year": "2026", "min_gpa": 4.50, "location": "নিউ মার্কেট, ঢাকা"},
-    {"name": "ঢাকা কলেজ (Dhaka College)", "district": "dhaka", "group": "arts", "year": "2026", "min_gpa": 4.00, "location": "নিউ মার্কেট, ঢাকা"},
+    # ------------------ ১. ঢাকা ------------------
+    {"name": "ঢাকা কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "নিউ মার্কেট, ঢাকা"},
+    {"name": "ঢাকা কলেজ", "district": "dhaka", "group": "commerce", "year": "2026", "min_gpa": 4.50, "location": "নিউ মার্কেট, ঢাকা"},
+    {"name": "ঢাকা কলেজ", "district": "dhaka", "group": "arts", "year": "2026", "min_gpa": 4.00, "location": "নিউ মার্কেট, ঢাকা"},
     {"name": "নটর ডেম কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "মতিঝিল, ঢাকা"},
+    {"name": "নটর ডেম কলেজ", "district": "dhaka", "group": "commerce", "year": "2026", "min_gpa": 4.50, "location": "মতিঝিল, ঢাকা"},
     {"name": "ভিকারুন্নিসা নূন স্কুল অ্যান্ড কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "বেইলি রোড, ঢাকা"},
     {"name": "রাজউক উত্তরা মডেল কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "উত্তরা, ঢাকা"},
     {"name": "ঢাকা রেসিডেন্সিয়াল মডেল কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "মোহাম্মদপুর, ঢাকা"},
     {"name": "গভ. সাইন্স কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 4.80, "location": "তেজগাঁও, ঢাকা"},
     {"name": "সরকারি তিতুমীর কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "মহাখালী, ঢাকা"},
+    {"name": "সরকারি তিতুমীর কলেজ", "district": "dhaka", "group": "commerce", "year": "2026", "min_gpa": 4.00, "location": "মহাখালী, ঢাকা"},
     {"name": "মোহাম্মদপুর সরকারি কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "মোহাম্মদপুর, ঢাকা"},
     {"name": "সরকারি বাংলা কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 4.25, "location": "মিরপুর, ঢাকা"},
+    {"name": "সরকারি শহীদ সোহরাওয়ার্দী কলেজ", "district": "dhaka", "group": "science", "year": "2026", "min_gpa": 4.30, "location": "লক্ষ্মীবাজার, ঢাকা"},
 
-    # ------------------ ২. রাজবাড়ী জেলা ------------------
-    {"name": "রাজবাড়ী সরকারি কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 4.00, "location": "রাজবাড়ী Sadar"},
-    {"name": "রাজবাড়ী সরকারি কলেজ", "district": "rajbari", "group": "commerce", "year": "2026", "min_gpa": 3.50, "location": "রাজবাড়ী Sadar"},
-    {"name": "রাজবাড়ী সরকারি কলেজ", "district": "rajbari", "group": "arts", "year": "2026", "min_gpa": 3.25, "location": "রাজবাড়ী Sadar"},
-    {"name": "রাজবাড়ী সরকারি মহিলা কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 3.75, "location": "রাজবাড়ী Sadar"},
-    {"name": "পাংশা সরকারি কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 3.50, "location": "পাংশা, রাজবাড়ী"},
+    # ------------------ ২. রাজবাড়ী ------------------
+    {"name": "রাজবাড়ী সরকারি কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "রাজবাড়ী সদর"},
+    {"name": "রাজবাড়ী সরকারি কলেজ", "district": "rajbari", "group": "commerce", "year": "2026", "min_gpa": 3.80, "location": "রাজবাড়ী সদর"},
+    {"name": "রাজবাড়ী সরকারি কলেজ", "district": "rajbari", "group": "arts", "year": "2026", "min_gpa": 3.50, "location": "রাজবাড়ী সদর"},
+    {"name": "রাজবাড়ী সরকারি মহিলা কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 4.00, "location": "রাজবাড়ী সদর"},
+    {"name": "রাজবাড়ী সরকারি মহিলা কলেজ", "district": "rajbari", "group": "arts", "year": "2026", "min_gpa": 3.25, "location": "রাজবাড়ী সদর"},
+    {"name": "পাংশা সরকারি কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 3.75, "location": "পাংশা, রাজবাড়ী"},
+    {"name": "পাংশা সরকারি কলেজ", "district": "rajbari", "group": "commerce", "year": "2026", "min_gpa": 3.25, "location": "পাংশা, রাজবাড়ী"},
     {"name": "পাংশা সরকারি কলেজ", "district": "rajbari", "group": "arts", "year": "2026", "min_gpa": 3.00, "location": "পাংশা, রাজবাড়ী"},
-    {"name": "বালিয়াকান্দি সরকারি কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 3.25, "location": "বালিয়াকান্দি, রাজবাড়ী"},
+    {"name": "বালিয়াকান্দি সরকারি কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 3.50, "location": "বালিয়াকান্দি, রাজবাড়ী"},
+    {"name": "কালুখালী সরকারি কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 3.25, "location": "কালুখালী, রাজবাড়ী"},
+    {"name": "গোয়ালন্দ কামরুল ইসলাম সরকারি কলেজ", "district": "rajbari", "group": "science", "year": "2026", "min_gpa": 3.50, "location": "গোয়ালন্দ, রাজবাড়ী"},
 
-    # ------------------ ৩. কুমিল্লা জেলা ------------------
-    {"name": "কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ", "district": "comilla", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "কুমিল্লা Sadar"},
-    {"name": "কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ", "district": "comilla", "group": "commerce", "year": "2026", "min_gpa": 4.00, "location": "কুমিল্লা Sadar"},
-    {"name": "কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ", "district": "comilla", "group": "arts", "year": "2026", "min_gpa": 3.50, "location": "কুমিল্লা Sadar"},
-    {"name": "কুমিল্লা সরকারি কলেজ", "district": "comilla", "group": "science", "year": "2026", "min_gpa": 4.75, "location": "কুমিল্লা Sadar"},
-    {"name": "কুমিল্লা শিক্ষাবোর্ড মডেল কলেজ", "district": "comilla", "group": "science", "year": "2026", "min_gpa": 4.75, "location": "কুমিল্লা Sadar"},
-    {"name": "ইস্পাহানী পাবলিক স্কুল অ্যান্ড কলেজ", "district": "comilla", "group": "science", "year": "2026", "min_gpa": 4.72, "location": "কুমিল্লা কেন্ট"},
+    # ------------------ ৩. চট্টগ্রাম ------------------
+    {"name": "চট্টগ্রাম কলেজ", "district": "chattogram", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "চকবাজার, চট্টগ্রাম"},
+    {"name": "সরকারি হাজি মুহাম্মদ মহসিন কলেজ", "district": "chattogram", "group": "science", "year": "2026", "min_gpa": 4.85, "location": "চকবাজার, চট্টগ্রাম"},
+    {"name": "চট্টগ্রাম সরকারি সিটি কলেজ", "district": "chattogram", "group": "science", "year": "2026", "min_gpa": 4.60, "location": "আইস ফ্যাক্টরি রোড, চট্টগ্রাম"},
+    {"name": "চট্টগ্রাম সরকারি মহিলা কলেজ", "district": "chattogram", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "খুলশী, চট্টগ্রাম"},
 
-    # ------------------ ৪. নোয়াখালী জেলা ------------------
-    {"name": "নোয়াখালী সরকারি কলেজ", "district": "noakhali", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "মাইজদী, নোয়াখালী"},
-    {"name": "নোয়াখালী সরকারি কলেজ", "district": "noakhali", "group": "commerce", "year": "2026", "min_gpa": 3.80, "location": "মাইজদী, নোয়াখালী"},
-    {"name": "নোয়াখালী সরকারি মহিলা কলেজ", "district": "noakhali", "group": "science", "year": "2026", "min_gpa": 4.00, "location": "নোয়াখালী Sadar"},
+    # ------------------ ৪. কুমিল্লা ------------------
+    {"name": "কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ", "district": "comilla", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "কুমিল্লা সদর"},
+    {"name": "কুমিল্লা ভিক্টোরিয়া সরকারি কলেজ", "district": "comilla", "group": "commerce", "year": "2026", "min_gpa": 4.25, "location": "কুমিল্লা সদর"},
+    {"name": "কুমিল্লা সরকারি কলেজ", "district": "comilla", "group": "science", "year": "2026", "min_gpa": 4.65, "location": "কুমিল্লা সদর"},
+    {"name": "কুমিল্লা শিক্ষাবোর্ড মডেল কলেজ", "district": "comilla", "group": "science", "year": "2026", "min_gpa": 4.70, "location": "কুমিল্লা সদর"},
+    {"name": "ইস্পাহানী পাবলিক স্কুল অ্যান্ড কলেজ", "district": "comilla", "group": "science", "year": "2026", "min_gpa": 4.75, "location": "কুমিল্লা সেনানিবাস"},
 
-    # ------------------ ৫. চট্টগ্রাম জেলা ------------------
-    {"name": "চট্টগ্রাম কলেজ", "district": "chittagong", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "চকবাজার, চট্টগ্রাম"},
-    {"name": "সরকারি হাজি মুহাম্মদ মহসিন কলেজ", "district": "chittagong", "group": "science", "year": "2026", "min_gpa": 4.80, "location": "চকবাজার, চট্টগ্রাম"},
-    {"name": "চট্টগ্রাম সরকারি সিটি কলেজ", "district": "chittagong", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "চট্টগ্রাম Sadar"},
-
-    # ------------------ ৬. রাজশাহী জেলা ------------------
-    {"name": "রাজশাহী কলেজ (Rajshahi College)", "district": "rajshahi", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "রাজশাহী Sadar"},
+    # ------------------ ৫. রাজশাহী ------------------
+    {"name": "রাজশাহী কলেজ", "district": "rajshahi", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "রাজশাহী সদর"},
     {"name": "নিউ গভ. ডিগ্রি কলেজ", "district": "rajshahi", "group": "science", "year": "2026", "min_gpa": 4.80, "location": "রাজশাহী"},
+    {"name": "রাজশাহী সরকারি মহিলা কলেজ", "district": "rajshahi", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "রাজশাহী"},
 
-    # ------------------ ৭. বগুড়া জেলা ------------------
-    {"name": "বগুড়া সরকারি আজিজুল হক কলেজ", "district": "bogra", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "বগুড়া Sadar"},
-    {"name": "বগুড়া সরকারি আজিজুল হক কলেজ", "district": "bogra", "group": "commerce", "year": "2026", "min_gpa": 4.25, "location": "বগুড়া Sadar"},
+    # ------------------ ৬. বগুড়া ------------------
+    {"name": "বগুড়া সরকারি আজিজুল হক কলেজ", "district": "bogra", "group": "science", "year": "2026", "min_gpa": 5.00, "location": "বগুড়া সদর"},
+    {"name": "বগুড়া সরকারি আজিজুল হক কলেজ", "district": "bogra", "group": "commerce", "year": "2026", "min_gpa": 4.30, "location": "বগুড়া সদর"},
+    {"name": "বগুড়া সরকারি শাহসুলতান কলেজ", "district": "bogra", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "বগুড়া"},
+    {"name": "বগুড়া সরকারি মহিলা কলেজ", "district": "bogra", "group": "science", "year": "2026", "min_gpa": 4.40, "location": "বগুড়া"},
 
-    # ------------------ ৮. সিলেট জেলা ------------------
-    {"name": "এমসি কলেজ সিলেট (MC College)", "district": "sylhet", "group": "science", "year": "2026", "min_gpa": 4.80, "location": "টিলাগর, সিলেট"},
+    # ------------------ ৭. সিলেট ------------------
+    {"name": "এমসি কলেজ (MC College)", "district": "sylhet", "group": "science", "year": "2026", "min_gpa": 4.80, "location": "টিলাগর, সিলেট"},
     {"name": "সিলেট সরকারি মহিলা কলেজ", "district": "sylhet", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "চৌহাট্টা, সিলেট"},
 
-    # ------------------ ৯. বরিশাল জেলা ------------------
-    {"name": "বরিশাল ব্রজমোহন সরকারি কলেজ (BM College)", "district": "barisal", "group": "science", "year": "2026", "min_gpa": 4.75, "location": "বরিশাল Sadar"},
+    # ------------------ ৮. বরিশাল ------------------
+    {"name": "বরিশাল ব্রজমোহন সরকারি কলেজ (BM College)", "district": "barisal", "group": "science", "year": "2026", "min_gpa": 4.75, "location": "বরিশাল সদর"},
+    {"name": "বরিশাল সরকারি মহিলা কলেজ", "district": "barisal", "group": "science", "year": "2026", "min_gpa": 4.25, "location": "বরিশাল"},
 
-    # ------------------ ১০. রংপুর জেলা ------------------
-    {"name": "রংপুর কারমাইকেল কলেজ", "district": "rangpur", "group": "science", "year": "2026", "min_gpa": 4.85, "location": "রংপুর Sadar"},
+    # ------------------ ৯. রংপুর ------------------
+    {"name": "কারমাইকেল কলেজ, রংপুর", "district": "rangpur", "group": "science", "year": "2026", "min_gpa": 4.85, "location": "রংপুর সদর"},
+    {"name": "রংপুর সরকারি কলেজ", "district": "rangpur", "group": "science", "year": "2026", "min_gpa": 4.50, "location": "রংপুর"},
 
-    # ------------------ ১১. ময়মনসিংহ জেলা ------------------
-    {"name": "ময়মনসিংহ আনন্দ মোহন সরকারি কলেজ", "district": "mymensingh", "group": "science", "year": "2026", "min_gpa": 4.85, "location": "ময়মনসিংহ Sadar"}
+    # ------------------ ১০. ময়মনসিংহ ------------------
+    {"name": "আনন্দ মোহন সরকারি কলেজ", "district": "mymensingh", "group": "science", "year": "2026", "min_gpa": 4.85, "location": "ময়মনসিংহ সদর"},
+    {"name": "ময়মনসিংহ সরকারি কলেজ", "district": "mymensingh", "group": "science", "year": "2026", "min_gpa": 4.40, "location": "ময়মনসিংহ"},
+
+    # ------------------ ১১. ফরিদপুর ------------------
+    {"name": "সরকারি রাজেন্দ্র কলেজ", "district": "faridpur", "group": "science", "year": "2026", "min_gpa": 4.60, "location": "ফরিদপুর সদর"},
+    {"name": "সরকারি রাজেন্দ্র কলেজ", "district": "faridpur", "group": "commerce", "year": "2026", "min_gpa": 4.00, "location": "ফরিদপুর সদর"},
+    {"name": "সরকারি সারদা সুন্দরী মহিলা কলেজ", "district": "faridpur", "group": "science", "year": "2026", "min_gpa": 4.20, "location": "ফরিদপুর"},
+
+    # ------------------ ১২. পাবনা ------------------
+    {"name": "সরকারি এডওয়ার্ড কলেজ", "district": "pabna", "group": "science", "year": "2026", "min_gpa": 4.75, "location": "পাবনা সদর"},
+    {"name": "পাবনা সরকারি মহিলা কলেজ", "district": "pabna", "group": "science", "year": "2026", "min_gpa": 4.30, "location": "পাবনা"},
+
+    # ------------------ ১৩. যশোর ------------------
+    {"name": "যশোর সরকারি এম. এম. কলেজ", "district": "jessore", "group": "science", "year": "2026", "min_gpa": 4.75, "location": "যশোর সদর"},
+    {"name": "যশোর সরকারি মহিলা কলেজ", "district": "jessore", "group": "science", "year": "2026", "min_gpa": 4.30, "location": "যশোর"}
 ]
 
-# বাংলাদেশের সকল ৬৪ জেলা তালিকা
+# ==============================================================================
+# বাংলা বর্ণানুক্রমিক ৬৪ জেলার তালিকা (ক, খ, গ, ঘ... পর্যায়ক্রমে)
+# ==============================================================================
 DISTRICTS = [
-    ("dhaka", "ঢাকা"), ("rajbari", "রাজবাড়ী"), ("comilla", "কুমিল্লা"), ("noakhali", "নোয়াখালী"),
-    ("chittagong", "চট্টগ্রাম"), ("coxsbazar", "কক্সবাজার"), ("rajshahi", "রাজশাহী"), ("bogra", "বগুড়া"),
-    ("sylhet", "সিলেট"), ("barisal", "বরিশাল"), ("rangpur", "রংপুর"), ("dinajpur", "দিনাজপুর"),
-    ("mymensingh", "ময়মনসিংহ"), ("jessore", "যশোর"), ("khulna", "খুলনা"), ("kushtia", "কুষ্টিয়া"),
-    ("feni", "ফেনী"), ("chandpur", "চাঁদপুর"), ("brahmanbaria", "ব্রাহ্মণবাড়িয়া"), ("tangail", "টাঙ্গাইল"),
-    ("faridpur", "ফরিদপুর"), ("gazipur", "গাজীপুর"), ("narayanganj", "নারায়ণগঞ্জ"), ("gopalganj", "গোপালগঞ্জ"),
-    ("madaripur", "মাদারীপুর"), ("shariatpur", "শরীয়তপুর"), ("manikganj", "মানিকগঞ্জ"), ("munshiganj", "মুন্সীগঞ্জ"),
-    ("narsingdi", "নরসিংদী"), ("kishoreganj", "কিশোরগঞ্জ"), ("jamalpur", "জামালপুর"), ("sherpur", "শেরপুর"),
-    ("netrokona", "নেত্রকোণা"), ("joypurhat", "জয়পুরহাট"), ("naogaon", "নওগাঁ"), ("natore", "নাটোর"),
-    ("chapai", "চাঁপাইনবাবগঞ্জ"), ("pabna", "পাবনা"), ("sirajganj", "সিরাজগঞ্জ"), ("kurigram", "কুড়িগ্রাম"),
-    ("gaibandha", "গাইবান্ধা"), ("nilphamari", "নীলফামারী"), ("panchagarh", "পঞ্চগড়"), ("thakurgaon", "ঠাকুরগাঁও"),
-    ("satkhira", "সাতক্ষীরা"), ("bagerhat", "বাগেরহাট"), ("jhenaidah", "ঝিনাইদহ"), ("magura", "মাগুরা"),
-    ("narail", "নড়াইল"), ("meherpur", "মেহেরপুর"), ("chuadanga", "চুয়াডাঙ্গা"), ("jhalthi", "ঝালকাঠি"),
-    ("patuakhali", "পটুয়াখালী"), ("pirojpur", "পিরোজপুর"), ("bhola", "ভোলা"), ("barguna", "বরগুনা"),
-    ("moulvibazar", "মৌলভীবাজার"), ("habiganj", "হবিগঞ্জ"), ("sunamganj", "সুনামগঞ্জ"), ("bandarban", "বান্দরবান"),
-    ("khagrachhari", "খাগড়াছড়ি"), ("rangamati", "রাঙ্গামাটি"), ("lakshmipur", "লক্ষ্মীপুর")
+    ("coxsbazar", "কক্সবাজার"), ("kishoreganj", "কিশোরগঞ্জ"), ("kurigram", "কুড়িগ্রাম"),
+    ("kushtia", "কুষ্টিয়া"), ("comilla", "কুমিল্লা"), ("khagrachhari", "খাগড়াছড়ি"),
+    ("khulna", "খুলনা"), ("gaibandha", "গাইবান্ধা"), ("gazipur", "গাজীপুর"),
+    ("gopalganj", "গোপালগঞ্জ"), ("chattogram", "চট্টগ্রাম"), ("chandpur", "চাঁদপুর"),
+    ("chapai", "চাঁপাইনবাবগঞ্জ"), ("chuadanga", "চুয়াডাঙ্গা"), ("jamalpur", "জামালপুর"),
+    ("jhenaidah", "ঝিনাইদহ"), ("jhalthi", "ঝালকাঠি"), ("tangail", "টাঙ্গাইল"),
+    ("thakurgaon", "ঠাকুরগাঁও"), ("dhaka", "ঢাকা"), ("dinajpur", "দিনাজপুর"),
+    ("naogaon", "নওগাঁ"), ("narail", "নড়াইল"), ("narsingdi", "নরসিংদী"),
+    ("natore", "নাটোর"), ("narayanganj", "নারায়ণগঞ্জ"), ("nilphamari", "নীলফামারী"),
+    ("netrokona", "নেত্রকোণা"), ("noakhali", "নোয়াখালী"), ("pabna", "পাবনা"),
+    ("panchagarh", "পঞ্চগড়"), ("patuakhali", "পটুয়াখালী"), ("pirojpur", "পিরোজপুর"),
+    ("feni", "ফেনী"), ("faridpur", "ফরিদপুর"), ("bagerhat", "বাগেরহাট"),
+    ("bandarban", "বান্দরবান"), ("barguna", "বরগুনা"), ("barisal", "বরিশাল"),
+    ("bogra", "বগুড়া"), ("brahmanbaria", "ব্রাহ্মণবাড়িয়া"), ("bhola", "ভোলা"),
+    ("manikganj", "মানিকগঞ্জ"), ("madaripur", "মাদারীপুর"), ("magura", "মাগুরা"),
+    ("munshiganj", "মুন্সীগঞ্জ"), ("meherpur", "মেহেরপুর"), ("moulvibazar", "মৌলভীবাজার"),
+    ("mymensingh", "ময়মনসিংহ"), ("jessore", "যশোর"), ("rangamati", "রাঙ্গামাটি"),
+    ("rajbari", "রাজবাড়ী"), ("rajshahi", "রাজশাহী"), ("rangpur", "রংপুর"),
+    ("lakshmipur", "লক্ষ্মীপুর"), ("shariatpur", "শরীয়তপুর"), ("sherpur", "শেরপুর"),
+    ("satkhira", "সাতক্ষীরা"), ("sirajganj", "সিরাজগঞ্জ"), ("sylhet", "সিলেট"),
+    ("sunamganj", "সুনামগঞ্জ"), ("habiganj", "হবিগঞ্জ")
 ]
 
 @app.route('/', methods=['GET', 'POST'])
@@ -115,11 +143,12 @@ def home():
                     min_gpa = college['min_gpa']
                     diff = user_gpa - min_gpa
 
-                    if diff >= 0.20:
+                    # সুন্দর ক্যাটাগরি ও চান্স পাওয়ার সম্ভাবনা
+                    if diff >= 0.25:
                         high_chance.append(college)
-                    elif 0.0 <= diff < 0.20:
+                    elif 0.0 <= diff < 0.25:
                         medium_chance.append(college)
-                    elif -0.40 <= diff < 0.0:
+                    elif -0.50 <= diff < 0.0:
                         low_chance.append(college)
         except ValueError:
             pass
